@@ -248,7 +248,11 @@ public:
 
 class ExpressionNode: public Node {
 public:
+    ExpressionNode(shared_ptr<Node> n): node(n) {
+	kind = nkExpression;
+    };
     shared_ptr<Node> GetExprNode() override {return node;};
+    void SetExprNode(shared_ptr<Node> n) override {node = n;};
     shared_ptr<Node> node;
 };
 
@@ -361,6 +365,10 @@ static inline shared_ptr<Node> unaryNode(UnaryOpKind op, shared_ptr<Node> n){
 
 static inline shared_ptr<Node> unaryNode(UnaryOpKind op){
     return shared_ptr<Node>(new UnaryNode(op, nullptr));
+}
+
+static inline shared_ptr<Node> expressionNode(){
+    return shared_ptr<Node>(new ExpressionNode(nullptr));
 }
 
 static inline shared_ptr<Node> identOrFloatNode(Token tok){
