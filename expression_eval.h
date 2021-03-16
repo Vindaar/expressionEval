@@ -398,24 +398,16 @@ static inline bool binaryOrUnary(vector<Token> tokens, int idx){
     }
 }
 
-inline shared_ptr<Node> parseNode(Token tok, vector<Token> tokens, int idx){
-    bool inExp = false;
+inline shared_ptr<Node> parseNode(Token tok, vector<Token>& tokens, int idx){
     shared_ptr<Node> result;
-    int exprStart = 0;
     switch(tok.kind){
         case tkParensOpen:
-            // start a ExpressionNode
-            inExp = true;
-            exprStart = idx;
+	    result = expressionNode();
             break;
         case tkParensClose:
-            if(!inExp){
-                throw runtime_error("Invalid input! No opening parens for closing parens found!");
-            }
-            inExp = false;
-            // parse everything in between into node
-            result = parseNode(tok, sliceCopy(tokens, exprStart, idx), idx);
-            break;
+	    throw domain_error(string("tkParensClose is an invalid token to parse. It is handled implicitly ") +
+			       string("by a recursive call to `tokensToAst`!"));
+	    break;
         case tkMul:
             result = binaryNode(toBinaryOpKind(tok.kind));
             break;
@@ -620,16 +612,36 @@ static inline void setNode(Expression& ast, shared_ptr<Node> toSet,
     }
 }
 
+static inline int findClosingParens(vector<Token> tokens, int idx){
+    int parensCounter = 0;
+    for(size_t i = (size_t)idx; i < tokens.size(); i++){
+	switch(tokens[i].kind){
+	    case tkParensOpen:
+		parensCounter++;
+		break;
+	    case tkParensClose:
+		if(parensCounter == 0){
+		    return i;
+		}
+		else{
+		    parensCounter--;
+		}
+		break;
+	    default: break;
+	}
+    }
+    throw domain_error(string("Encounterd end of `findClosingParens`. Points to invalid vector of tokens") +
+		       string(" because no closing parens were found. Should have thrown earlier exception") +
+		       string(" in `verifyTokens`!"));
+}
+
 static inline Expression tokensToAst(vector<Token> tokens){
     // parses the given vector of tokens into an AST. Done by respecting operator precedence
-    // TODO possibly have to sort by operator precedence
-    ExpressionNode exp;
     Expression result = nullptr;
     shared_ptr<Node> n;
     int idx = 0;
     int lastPrecedence = 0;
     bool lastWasUnary = false;
-    Token lastOp = Token(tkInvalid);
     while((size_t)idx < tokens.size()){
         // essentially have to skip until we find an operator based token and *not*
         // float / ident. Thene decide where to attach the resulting thing based
@@ -640,7 +652,19 @@ static inline Expression tokensToAst(vector<Token> tokens){
         int precedence = getPrecedence(tok.kind);
 
         // order switch statement based on precedence.
-        n = parseNode(tok, tokens, idx);
+        n = parseNode(tok, ref(tokens), idx);
+
+	// possiblyy fully parse the expression node
+	if(n->kind == nkExpression){
+	    // recurse and set the result to this expression
+	    assert(n->GetExprNode() == nullptr);
+	    // find closing parens of this
+	    int closingIdx = findClosingParens(tokens, idx+1);
+	    auto exprNode = tokensToAst(sliceCopy(tokens, idx+1, closingIdx-1));
+	    n->SetExprNode(exprNode);
+	    idx = closingIdx;
+	}
+
         if(result == nullptr){
             // start by result being first node (e.g. pure string or float)
             result = n;
@@ -673,6 +697,9 @@ static inline Expression tokensToAst(vector<Token> tokens){
                     // add to result node
                     result = n;
 		    break;
+		case nkExpression:
+		    result = n;
+		    break;
 		default: break;
             }
             // append to last
@@ -684,7 +711,6 @@ static inline Expression tokensToAst(vector<Token> tokens){
 
         if(nextOp.kind == tok.kind){
             lastPrecedence = precedence;
-            lastOp = nextOp;
         }
         idx++;
     }
@@ -855,18 +881,18 @@ void verifyTokens(vector<Token> tokens){
     bool lastWasBinaryOp = false;
     bool lastWasUnaryOp = false;
     bool lastWasIdentOrFloat = false;
-    bool parensOpen = false;
+    int parensCounter = 0;
     //int idx = 0;
     for(auto tok : tokens){
 	switch(tok.kind){
 	    case tkParensOpen :
-		parensOpen = true;
+		parensCounter++;
 		break;
 	    case tkParensClose :
-		if(!parensOpen){
+		parensCounter--;
+		if(parensCounter < 0){
 		    throw runtime_error("Parsing of expression faild. Closing parenthesis before opening!");
 		}
-		parensOpen = false;
 		break;
 	    case tkMul :
 		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
@@ -948,7 +974,7 @@ void verifyTokens(vector<Token> tokens){
 		throw runtime_error("Token of kind " + toString(tok.kind) + " is not supported yet!");
 	}
     }
-    if(parensOpen){
+    if(parensCounter != 0){
 	throw runtime_error("Parsing of expression faild. Closing parentheses missing!");
     }
     if(lastWasBinaryOp){
