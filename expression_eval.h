@@ -796,6 +796,123 @@ inline Either<double, bool> evaluate(map<string, float> m, shared_ptr<Node> n){
     }
     throw logic_error("Invalid code branch in `evaluate`. Should never end up here!");
 }
+
+void raiseIfLastOp(bool lastWasBinaryOp, bool lastWasUnaryOp, bool lastWasIdentOrFloat = false){
+    if(!lastWasIdentOrFloat && lastWasBinaryOp){
+	throw runtime_error("Parsing of expression failed. Binary operation followed by binary operation!");
+    }
+    else if(!lastWasIdentOrFloat && lastWasUnaryOp){
+	throw runtime_error("Parsing of expression failed. Unary operation followed by binary operation!");
+    }
+}
+
+void verifyTokens(vector<Token> tokens){
+    bool lastWasBinaryOp = false;
+    bool lastWasUnaryOp = false;
+    bool lastWasIdentOrFloat = false;
+    bool parensOpen = false;
+    //int idx = 0;
+    for(auto tok : tokens){
+	switch(tok.kind){
+	    case tkParensOpen :
+		parensOpen = true;
+		break;
+	    case tkParensClose :
+		if(!parensOpen){
+		    throw runtime_error("Parsing of expression faild. Closing parenthesis before opening!");
+		}
+		parensOpen = false;
+		break;
+	    case tkMul :
+		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
+		lastWasBinaryOp = true;
+		lastWasUnaryOp = false;
+		break;
+	    case tkDiv :
+		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
+		lastWasBinaryOp = true;
+		lastWasUnaryOp = false;
+		break;
+	    case tkPlus :
+		// TODO: check for unary!
+		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
+		lastWasBinaryOp = true;
+		lastWasUnaryOp = false;
+		break;
+	    case tkMinus :
+		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
+		lastWasBinaryOp = true;
+		lastWasUnaryOp = false;
+		break;
+	    case tkLess :
+		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
+		lastWasBinaryOp = true;
+		lastWasUnaryOp = false;
+		break;
+	    case tkGreater :
+		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
+		lastWasBinaryOp = true;
+		lastWasUnaryOp = false;
+		break;
+	    case tkLessEq :
+		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
+		lastWasBinaryOp = true;
+		lastWasUnaryOp = false;
+		break;
+	    case tkGreaterEq :
+		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
+		lastWasBinaryOp = true;
+		lastWasUnaryOp = false;
+		break;
+	    case tkAnd :
+		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
+		lastWasBinaryOp = true;
+		lastWasUnaryOp = false;
+		break;
+	    case tkOr :
+		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
+		lastWasBinaryOp = true;
+		lastWasUnaryOp = false;
+		break;
+	    case tkUnequal :
+		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
+		lastWasBinaryOp = true;
+		lastWasUnaryOp = false;
+		break;
+	    case tkEqual :
+		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
+		lastWasBinaryOp = true;
+		lastWasUnaryOp = false;
+		break;
+	    case tkNot :
+		raiseIfLastOp(lastWasBinaryOp, lastWasUnaryOp, lastWasIdentOrFloat);
+		lastWasUnaryOp = true;
+		lastWasBinaryOp = false;
+		break;
+	    case tkIdent:
+		lastWasIdentOrFloat = true;
+		lastWasBinaryOp = false;
+		lastWasUnaryOp = false;
+		break;
+	    case tkFloat:
+		lastWasIdentOrFloat = true;
+		lastWasBinaryOp = false;
+		lastWasUnaryOp = false;
+		break;
+	    default:
+		throw runtime_error("Token of kind " + toString(tok.kind) + " is not supported yet!");
+	}
+    }
+    if(parensOpen){
+	throw runtime_error("Parsing of expression faild. Closing parentheses missing!");
+    }
+    if(lastWasBinaryOp){
+	throw runtime_error("Parsing of expression faild. Last token was a binary token!");
+    }
+    if(lastWasUnaryOp){
+	throw runtime_error("Parsing of expression faild. Last token was a unary token!");
+    }
+    assert(lastWasIdentOrFloat);
 }
 
 inline Expression parseExpression(string s){
@@ -913,6 +1030,10 @@ inline Expression parseExpression(string s){
         idx++;
     }
     addTokenIfValid(ref(tokens), toIdentAndClear(ref(curBuf)));
+
+    // possibly raise if order of tokens is bad / invalid input
+    verifyTokens(tokens);
+
     cout << "curBuf " << curBuf << endl;
     int i = 0;
     for(auto tok : tokens){
