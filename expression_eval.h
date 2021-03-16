@@ -156,17 +156,48 @@ enum UnaryOpKind {
 class Node {
 public:
     NodeKind kind;
-    virtual UnaryOpKind GetUnaryOp() {return uoPlus;}; // wtf why have to return something
-    virtual shared_ptr<Node> GetUnaryNode() {return nullptr;};
-    virtual void SetUnaryNode(shared_ptr<Node> node) {};
-    virtual BinaryOpKind GetBinaryOp() {return boPlus;};
-    virtual shared_ptr<Node> GetLeft() {return nullptr;};
-    virtual shared_ptr<Node> GetRight() {return nullptr;};
-    virtual void SetLeft(shared_ptr<Node> node) {};
-    virtual void SetRight(shared_ptr<Node> node) {};
-    virtual double GetVal() {return 0.0;};
-    virtual string GetIdent() {return "";};
-    virtual shared_ptr<Node> GetExprNode() {return nullptr;};
+    virtual UnaryOpKind GetUnaryOp() {
+	throw domain_error("Invalid call to `GetUnaryOp` for node of kind " + kind);
+	return uoPlus;}; // wtf why have to return something
+    virtual shared_ptr<Node> GetUnaryNode() {
+	throw domain_error("Invalid call to `GetUnaryNode` for node of kind " + kind);
+	return nullptr;};
+    virtual void SetUnaryNode(shared_ptr<Node> node) {
+	throw domain_error("Invalid call to `SetUnaryNode` for node of kind " + kind);
+    };
+    virtual BinaryOpKind GetBinaryOp() {
+	throw domain_error("Invalid call to `GetBinaryNode` for node of kind " + kind);
+	return boPlus;
+    };
+    virtual shared_ptr<Node> GetLeft() {
+	throw domain_error("Invalid call to `GetLeft` for node of kind " + kind);
+	return nullptr;
+    };
+    virtual shared_ptr<Node> GetRight() {
+	throw domain_error("Invalid call to `GetRight` for node of kind " + kind);
+	return nullptr;
+    };
+    virtual void SetLeft(shared_ptr<Node> node) {
+	throw domain_error("Invalid call to `SetLeft` for node of kind " + kind);
+    };
+    virtual void SetRight(shared_ptr<Node> node) {
+	throw domain_error("Invalid call to `SetRight` for node of kind " + kind);
+    };
+    virtual double GetVal() {
+	throw domain_error("Invalid call to `GetVal` for node of kind " + kind);
+	return 0.0;
+    };
+    virtual string GetIdent() {
+	throw domain_error("Invalid call to `GetIdent` for node of kind " + kind);
+	return "";
+    };
+    virtual shared_ptr<Node> GetExprNode() {
+	throw domain_error("Invalid call to `GetExprNode` for node of kind " + kind);
+	return nullptr;
+    };
+    virtual void SetExprNode(shared_ptr<Node>) {
+	throw domain_error("Invalid call to `SetExprNode` for node of kind " + kind);
+    };
 };
 
 class UnaryNode: public Node {
