@@ -23,6 +23,9 @@ public:
     bool isLeft(){
 	return _isLeft;
     }
+    bool isRight(){
+	return !_isLeft;
+    }
     T unsafeGetLeft(){
 	// unsafe if not in `isLeft` check!
 	return left;
@@ -662,7 +665,7 @@ inline Either<double, bool> negative(Either<double, bool> x){
 
 inline Either<double, bool> negateCmp(Either<double, bool> x){
     // NOTE: we do *not* support arbitrary casting of floats to bools!
-    assert(!x.isLeft());
+    assert(x.isRight());
     return Left<double, bool>(!x.unsafeGetRight());
 }
 
@@ -719,7 +722,7 @@ inline Either<double, bool> equal(Either<double, bool> x, Either<double, bool> y
 	// TODO: make comparison float precision safe
 	return Right<double, bool>(x.unsafeGetLeft() == y.unsafeGetLeft());
     }
-    else if(!x.isLeft() && !y.isLeft()){
+    else if(x.isRight() && y.isRight()){
 	return Right<double, bool>(x.unsafeGetRight() == y.unsafeGetRight());
     }
     else{
@@ -731,7 +734,7 @@ inline Either<double, bool> unequal(Either<double, bool> x, Either<double, bool>
     if(x.isLeft() && y.isLeft()){
 	return Right<double, bool>(x.unsafeGetLeft() != y.unsafeGetLeft());
     }
-    else if(!x.isLeft() && !y.isLeft()){
+    else if(x.isRight() && y.isRight()){
 	return Right<double, bool>(x.unsafeGetRight() != y.unsafeGetRight());
     }
     else{
@@ -740,7 +743,7 @@ inline Either<double, bool> unequal(Either<double, bool> x, Either<double, bool>
 }
 
 inline Either<double, bool> andCmp(Either<double, bool> x, Either<double, bool> y){
-    if(!x.isLeft() && !y.isLeft()){
+    if(x.isRight() && y.isRight()){
 	return Right<double, bool>(x.unsafeGetRight() && y.unsafeGetRight());
     }
     else{
@@ -749,7 +752,7 @@ inline Either<double, bool> andCmp(Either<double, bool> x, Either<double, bool> 
 }
 
 inline Either<double, bool> orCmp(Either<double, bool> x, Either<double, bool> y){
-    if(!x.isLeft() && !y.isLeft()){
+    if(x.isRight() && y.isRight()){
 	return Right<double, bool>(x.unsafeGetRight() || y.unsafeGetRight());
     }
     else{
