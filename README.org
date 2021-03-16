@@ -8,3 +8,7 @@ of ROOT trees.
 ** C++ is annoying af.
 
 That's it. That's the subsection.
+
+** License
+
+Just MIT.
