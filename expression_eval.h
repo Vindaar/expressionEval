@@ -238,8 +238,7 @@ static inline BinaryOpKind toBinaryOpKind(TokenKind kind){
         case tkAnd: return boAnd;
         case tkOr: return boOr;
         default:
-            cout << "Invalid binary op kind for token " << kind << endl;
-            throw;
+            throw runtime_error("Invalid binary op kind for token " + toString(kind));
     }
 }
 
@@ -267,8 +266,7 @@ static inline UnaryOpKind toUnaryOpKind(TokenKind kind){
         case tkMinus: return uoMinus;
         case tkNot: return uoNot;
         default:
-            cout << "Invalid unary op kind for token " << kind << endl;
-            throw;
+            throw runtime_error("Invalid unary op kind for token " + toString(kind));
     }
 }
 
@@ -367,8 +365,7 @@ inline shared_ptr<Node> parseNode(Token tok, vector<Token> tokens, int idx){
             break;
         case tkParensClose:
             if(!inExp){
-                cout << "Invalid input! No opening parens for closing parens found!" << endl;
-                throw;
+                throw runtime_error("Invalid input! No opening parens for closing parens found!");
             }
             inExp = false;
             // parse everything in between into node
@@ -778,8 +775,7 @@ inline Either<double, bool> evaluate(map<string, float> m, shared_ptr<Node> n){
 		case boAnd: return andCmp(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
 		case boOr: return orCmp(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
 		default:
-		    cout << "Invalid binary op kind for token " << astToStr(n) << endl;
-		    throw;
+		    throw runtime_error("Invalid binary op kind for token " + astToStr(n));
 	    }
 	case nkUnary:
 	    // apply unary op
@@ -797,8 +793,8 @@ inline Either<double, bool> evaluate(map<string, float> m, shared_ptr<Node> n){
 	case nkExpression:
 	    return evaluate(m, n->GetExprNode());
     }
-    cout << "Invalid code branch in `evaluate`. Should never end up here! " << endl;
-    throw;
+    throw logic_error("Invalid code branch in `evaluate`. Should never end up here!");
+}
 }
 
 inline Expression parseExpression(string s){
@@ -860,8 +856,7 @@ inline Expression parseExpression(string s){
                 // assert after is another &
                 if(!((size_t)(idx + 1) < s.length()) && s[idx+1] != '&'){
                     // raise a parsing error
-                    cout << "Bad formula! " << idx << "  " << s.length() << endl;
-                    throw;
+                    throw runtime_error("Bad formula! " + to_string(idx) + "  " + to_string(s.length()));
                 }
                 addTokenIfValid(ref(tokens), Token(tkAnd));
                 // skip the next element
@@ -872,8 +867,7 @@ inline Expression parseExpression(string s){
                 // assert after is another =
                 if(!((size_t)(idx + 1) < s.length()) && s[idx+1] != '='){
                     // raise a parsing error
-                    cout << "Bad formula! " << idx << "  " << s.length() << endl;
-                    throw;
+                    throw runtime_error("Bad formula! " + to_string(idx) + "  " + to_string(s.length()));
                 }
                 addTokenIfValid(ref(tokens), Token(tkEqual));
                 // skip the next element
