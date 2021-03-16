@@ -1024,6 +1024,19 @@ inline Expression parseExpression(string s){
                 idx++;
                 break;
             case ' ':
+		// check if previous was an `and` / `or`. If so is operator!
+		if(curBuf == "and"){
+		    addTokenIfValid(ref(tokens), Token(tkAnd));
+		    curBuf.clear();
+		}
+		else if(curBuf == "or"){
+		    addTokenIfValid(ref(tokens), Token(tkOr));
+		    curBuf.clear();
+		}
+		else{
+		    // else might be an identifier or float
+		    addTokenIfValid(ref(tokens), toIdentAndClear(ref(curBuf)));
+		}
                 break;
             default:
                 curBuf += s[idx];

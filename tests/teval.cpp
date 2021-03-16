@@ -91,6 +91,24 @@ void boolAndLogical(){
     testIt("2.1 < 2.2 && 1000 == 1000 && 6.4 >= 1.1 && 1234 == 2345 || 5 < 2", false);
 }
 
+void boolEnglish(){
+    testIt("5 + 2 < 7 and 4 < 8", false);
+    testIt("5 + 2 <= 7 and 4 < 8", true);
+    testIt("5 + 2 > 7 and 4 < 8", false);
+    testIt("5 + 2 >= 7 and 4 < 8", true);
+    testIt("5 + 2 == 7 and 4 < 8", true);
+    testIt("5 + 2 != 7 and 4 < 8", false);
+    testIt("7 < 5 + 2 and 4 < 8", false);
+    testIt("7 <= 5 + 2 and 4 < 8", true);
+    testIt("7 > 5 + 2 and 4 < 8", false);
+    testIt("7 >= 5 + 2 and 4 < 8", true);
+    testIt("2.1 < 2.2 and 1000 == 1000 and 6.4 >= 1.1 and 1234 != 2345", true);
+    testIt("2.1 < 2.2 and 1000 == 1000 and 6.4 >= 1.1 and 1234 != 2345 or 5 < 2", true);
+    testIt("2.1 < 2.2 and 1000 == 1000 and 6.4 >= 1.1 and 1234 != 2345 or 2 < 5", true);
+    testIt("2.1 < 2.2 and 1000 == 1000 and 6.4 >= 1.1 and 1234 == 2345 or 2 < 5", true);
+    testIt("2.1 < 2.2 and 1000 == 1000 and 6.4 >= 1.1 and 1234 == 2345 or 5 < 2", false);
+}
+
 void invalid(){
     // these should fail at the parsing stage already!
     failToParse("5 ! = 3");
@@ -106,5 +124,6 @@ int main() {
     maths();
     simpleInfixBool();
     boolAndLogical();
+    boolEnglish();
     invalid();
 }
