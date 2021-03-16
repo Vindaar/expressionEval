@@ -597,7 +597,6 @@ static inline Expression tokensToAst(vector<Token> tokens){
 
         // order switch statement based on precedence.
         n = parseNode(tok, tokens, idx);
-        //cout << "Current node " << astToStr(n) << endl;
         if(result == nullptr){
             // start by result being first node (e.g. pure string or float)
             result = n;
@@ -645,7 +644,9 @@ static inline Expression tokensToAst(vector<Token> tokens){
         }
         idx++;
     }
+#ifdef DEBUG_EXPRESSIONS
     cout << "Resulting expression " << astToStr(result) << endl;
+#endif
     return result;
 }
 
@@ -1034,11 +1035,12 @@ inline Expression parseExpression(string s){
     // possibly raise if order of tokens is bad / invalid input
     verifyTokens(tokens);
 
-    cout << "curBuf " << curBuf << endl;
+#ifdef DEBUG_EXPRESSIONS
     int i = 0;
     for(auto tok : tokens){
         cout << "i " << i << "  " << toString(tok) << endl;
         i++;
     }
+#endif
     return tokensToAst(tokens);
 }
