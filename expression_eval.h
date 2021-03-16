@@ -344,8 +344,9 @@ static inline shared_ptr<Node> identOrFloatNode(Token tok){
 }
 
 static inline bool binaryOrUnary(vector<Token> tokens, int idx){
-    if((idx > 1 && (tokens[idx-1].kind == tkFloat || tokens[idx-1].kind == tkIdent)) &&
-       (((size_t)idx < tokens.size() - 1 && tokens[idx+1].kind == tkFloat) || tokens[idx+1].kind == tkIdent)){
+    if((idx > 0 && (tokens[idx-1].kind == tkFloat || tokens[idx-1].kind == tkIdent)) &&
+       (((size_t)idx <= tokens.size() - 1 &&
+	 (tokens[idx+1].kind == tkFloat || tokens[idx+1].kind == tkIdent)))){
         return true;
     }
     else{
