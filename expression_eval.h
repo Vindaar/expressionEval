@@ -863,6 +863,37 @@ inline Expression parseExpression(string s){
                 // skip the next element
                 idx++;
                 break;
+            case '|':
+		// TODO: replace by `and` and `or`
+                addTokenIfValid(ref(tokens), toIdentAndClear(ref(curBuf)));
+                // assert after is another &
+                if(!((size_t)(idx + 1) < s.length()) && s[idx+1] != '|'){
+                    // raise a parsing error
+                    throw runtime_error("Bad formula! " + to_string(idx) + "  " + to_string(s.length()));
+                }
+                addTokenIfValid(ref(tokens), Token(tkOr));
+                // skip the next element
+                idx++;
+                break;
+            case '!':
+                addTokenIfValid(ref(tokens), toIdentAndClear(ref(curBuf)));
+                // assert after is another =
+                if(((size_t)(idx + 1) < s.length()) && s[idx+1] == '='){
+		    // is unequal
+		    addTokenIfValid(ref(tokens), Token(tkUnequal));
+		    // skip the next element
+		    idx++;
+                }
+		else if(((size_t)(idx + 1) < s.length()) && s[idx+1] != ' '){
+		    // should be unary `!`
+		    // TODO we should ideally have a `s[idx+1]` in letters / numbers check
+		    addTokenIfValid(ref(tokens), Token(tkNot));
+		}
+		else{
+                    // raise a parsing error
+                    throw runtime_error("Bad formula! " + to_string(idx) + "  " + to_string(s.length()) + ". `!` followed by space invalid!");
+		}
+                break;
             case '=':
                 addTokenIfValid(ref(tokens), toIdentAndClear(ref(curBuf)));
                 // assert after is another =
