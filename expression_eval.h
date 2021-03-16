@@ -541,7 +541,7 @@ static inline Token nextOpTok(vector<Token> tokens, int& idx){
 }
 
 static inline bool setLastRightNode(shared_ptr<Node> node, shared_ptr<Node> right){
-    if(node->GetRight() != NULL){
+    if(node->GetRight() != nullptr){
         auto bval = setLastRightNode(node->GetRight(), right);
         if(bval){
             return true;
@@ -566,7 +566,7 @@ static inline void setNodeWithPrecedence(shared_ptr<Node> node, int precedence){
     while(node->kind == nkBinary &&
 	  ((node->GetRight()->kind == nkBinary &&
 	    getPrecedence(node->GetRight()->GetBinaryOp()) < precedence) ||
-	   node->GetRight() == NULL)){
+	   node->GetRight() == nullptr)){
 	node = node->GetRight();
     }
 }
@@ -596,10 +596,10 @@ static inline void setNode(Expression& ast, shared_ptr<Node> toSet,
     }
     else{
         // traverse the result node until we find a binary node with an operator of
-        // *higher* precedence than `toSet` or a NULL node
+        // *higher* precedence than `toSet` or a nullptr node
 	auto node = ast;
 	setNodeWithPrecedence(node, getPrecedence(toSet->GetBinaryOp()));
-        if(node->GetRight() == NULL){
+        if(node->GetRight() == nullptr){
             node->SetRight(nullptr);
             toSet->SetLeft(node);
             node->SetRight(toSet);
