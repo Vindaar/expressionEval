@@ -13,8 +13,8 @@ Either<double, bool> runIt(string s){
 
 void testIt(string s, double exp){
     auto res = runIt(s);
-    assert(res.isLeft());
-    assert(res.unsafeGetLeft() == exp);
+    assert((res.isLeft()));
+    assert((res.unsafeGetLeft() == exp));
 }
 
 void testIt(string s, bool exp){
@@ -59,6 +59,11 @@ void maths(){
     testIt("2 * 2 + 4 * 4", 20.0);
 }
 
+void simpleParens(){
+    testIt("(5 + 10) / 2", 7.5);
+    testIt("(10 - 3) / (1 * 7)", 1.0);
+    testIt("(5 * (5 / (10 - 5)) + 10) - 15", 0.0);
+}
 
 void simpleInfixBool(){
     testIt("5 + 2 < 7", false);
@@ -122,6 +127,7 @@ int main() {
     simple();
     simpleInfix();
     maths();
+    simpleParens();
     simpleInfixBool();
     boolAndLogical();
     boolEnglish();
