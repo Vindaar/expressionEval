@@ -49,6 +49,17 @@ void simpleInfix(){
     testIt("10 != 10", false);
 }
 
+void maths(){
+    testIt("5 * 2", 10.0);
+    testIt("10 / 2", 5.0);
+    testIt("10 - 5", 5.0);
+    // math precedence
+    testIt("5 + 10 / 2", 10.0);
+    testIt("5 + 5 * 2", 15.0);
+    testIt("2 * 2 + 4 * 4", 20.0);
+}
+
+
 void simpleInfixBool(){
     testIt("5 + 2 < 7", false);
     testIt("5 + 2 <= 7", true);
@@ -92,6 +103,7 @@ void invalid(){
 int main() {
     simple();
     simpleInfix();
+    maths();
     simpleInfixBool();
     boolAndLogical();
     invalid();
