@@ -891,7 +891,7 @@ inline Either<double, bool> evaluate(map<string, float> m, shared_ptr<Node> n){
     throw logic_error("Invalid code branch in `evaluate`. Should never end up here!");
 }
 
-void raiseIfLastOp(bool lastWasBinaryOp, bool lastWasUnaryOp, bool lastWasIdentOrFloat = false){
+static inline void raiseIfLastOp(bool lastWasBinaryOp, bool lastWasUnaryOp, bool lastWasIdentOrFloat = false){
     if(!lastWasIdentOrFloat && lastWasBinaryOp){
 	throw runtime_error("Parsing of expression failed. Binary operation followed by binary operation!");
     }
@@ -900,7 +900,7 @@ void raiseIfLastOp(bool lastWasBinaryOp, bool lastWasUnaryOp, bool lastWasIdentO
     }
 }
 
-void verifyTokens(vector<Token> tokens){
+static inline void verifyTokens(vector<Token> tokens){
     bool lastWasBinaryOp = false;
     bool lastWasUnaryOp = false;
     bool lastWasIdentOrFloat = false;
