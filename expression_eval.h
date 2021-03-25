@@ -153,50 +153,73 @@ enum UnaryOpKind {
     uoPlus, uoMinus, uoNot
 };
 
+static inline string toString(NodeKind kind){
+    string result = "";
+    switch(kind){
+        case nkUnary:
+	    result = "nkUnary";
+            break;
+	case nkBinary:
+	    result = "nkBinary";
+            break;
+	case nkFloat:
+	    result = "nkFloat";
+            break;
+        case nkIdent:
+	    result = "nkIdent";
+            break;
+	case nkExpression:
+	    result = "nkExpression";
+	    break;
+	default: break;
+    }
+    return result;
+}
+
 class Node {
 public:
     NodeKind kind;
     virtual UnaryOpKind GetUnaryOp() {
-	throw domain_error("Invalid call to `GetUnaryOp` for node of kind " + kind);
+	throw domain_error("Invalid call to `GetUnaryOp` for node of kind " + toString(kind));
 	return uoPlus;}; // wtf why have to return something
     virtual shared_ptr<Node> GetUnaryNode() {
-	throw domain_error("Invalid call to `GetUnaryNode` for node of kind " + kind);
+	throw domain_error("Invalid call to `GetUnaryNode` for node of kind " + toString(kind));
 	return nullptr;};
     virtual void SetUnaryNode(shared_ptr<Node> node) {
-	throw domain_error("Invalid call to `SetUnaryNode` for node of kind " + kind);
+	throw domain_error("Invalid call to `SetUnaryNode` for node of kind " + toString(kind));
     };
     virtual BinaryOpKind GetBinaryOp() {
-	throw domain_error("Invalid call to `GetBinaryNode` for node of kind " + kind);
+	throw domain_error("Invalid call to `GetBinaryNode` for node of kind " + toString(kind));
 	return boPlus;
     };
     virtual shared_ptr<Node> GetLeft() {
-	throw domain_error("Invalid call to `GetLeft` for node of kind " + kind);
+	throw domain_error("Invalid call to `GetLeft` for node of kind " + toString(kind));
 	return nullptr;
     };
     virtual shared_ptr<Node> GetRight() {
-	throw domain_error("Invalid call to `GetRight` for node of kind " + kind);
+	throw domain_error("Invalid call to `GetRight` for node of kind " + toString(kind));
 	return nullptr;
     };
     virtual void SetLeft(shared_ptr<Node> node) {
-	throw domain_error("Invalid call to `SetLeft` for node of kind " + kind);
+	throw domain_error("Invalid call to `SetLeft` for node of kind " + toString(kind));
     };
     virtual void SetRight(shared_ptr<Node> node) {
-	throw domain_error("Invalid call to `SetRight` for node of kind " + kind);
+	throw domain_error("Invalid call to `SetRight` for node of kind " + toString(kind));
     };
     virtual double GetVal() {
-	throw domain_error("Invalid call to `GetVal` for node of kind " + kind);
+	throw domain_error("Invalid call to `GetVal` for node of kind " + toString(kind));
 	return 0.0;
     };
     virtual string GetIdent() {
-	throw domain_error("Invalid call to `GetIdent` for node of kind " + kind);
+	throw domain_error("Invalid call to `GetIdent` for node of kind " + toString(kind));
 	return "";
     };
     virtual shared_ptr<Node> GetExprNode() {
-	throw domain_error("Invalid call to `GetExprNode` for node of kind " + kind);
+	throw domain_error("Invalid call to `GetExprNode` for node of kind " + toString(kind));
 	return nullptr;
     };
     virtual void SetExprNode(shared_ptr<Node>) {
-	throw domain_error("Invalid call to `SetExprNode` for node of kind " + kind);
+	throw domain_error("Invalid call to `SetExprNode` for node of kind " + toString(kind));
     };
 };
 
