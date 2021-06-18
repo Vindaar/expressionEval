@@ -957,32 +957,32 @@ inline Either<double, bool> orCmp(Either<double, bool> x, Either<double, bool> y
     }
 }
 
-inline Either<double, bool> evaluate(map<string, float> m, shared_ptr<Node> n){
+inline Either<double, bool> evaluate(map<string, float> m, map<string, map<int, float>> maps, shared_ptr<Node> n){
     switch(n->kind){
 	case nkBinary:
 	    // recurse on both childern
 	    switch(n->GetBinaryOp()){
-		case boMul: return multiply(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
-		case boDiv: return divide(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
-		case boPlus: return plusCmp(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
-		case boMinus: return minusCmp(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
-		case boLess: return lessCmp(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
-		case boGreater: return greaterCmp(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
-		case boLessEq: return lessEq(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
-		case boGreaterEq: return greaterEq(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
-		case boEqual: return equal(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
-		case boUnequal: return unequal(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
-		case boAnd: return andCmp(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
-		case boOr: return orCmp(evaluate(m, n->GetLeft()), evaluate(m, n->GetRight()));
+		case boMul: return multiply(evaluate(m, maps, n->GetLeft()), evaluate(m, maps, n->GetRight()));
+		case boDiv: return divide(evaluate(m, maps, n->GetLeft()), evaluate(m, maps, n->GetRight()));
+		case boPlus: return plusCmp(evaluate(m, maps, n->GetLeft()), evaluate(m, maps, n->GetRight()));
+		case boMinus: return minusCmp(evaluate(m, maps, n->GetLeft()), evaluate(m, maps, n->GetRight()));
+		case boLess: return lessCmp(evaluate(m, maps, n->GetLeft()), evaluate(m, maps, n->GetRight()));
+		case boGreater: return greaterCmp(evaluate(m, maps, n->GetLeft()), evaluate(m, maps, n->GetRight()));
+		case boLessEq: return lessEq(evaluate(m, maps, n->GetLeft()), evaluate(m, maps, n->GetRight()));
+		case boGreaterEq: return greaterEq(evaluate(m, maps, n->GetLeft()), evaluate(m, maps, n->GetRight()));
+		case boEqual: return equal(evaluate(m, maps, n->GetLeft()), evaluate(m, maps, n->GetRight()));
+		case boUnequal: return unequal(evaluate(m, maps, n->GetLeft()), evaluate(m, maps, n->GetRight()));
+		case boAnd: return andCmp(evaluate(m, maps, n->GetLeft()), evaluate(m, maps, n->GetRight()));
+		case boOr: return orCmp(evaluate(m, maps, n->GetLeft()), evaluate(m, maps, n->GetRight()));
 		default:
 		    throw runtime_error("Invalid binary op kind for token " + astToStr(n));
 	    }
 	case nkUnary:
 	    // apply unary op
 	    switch(n->GetUnaryOp()){
-		case uoPlus: return evaluate(m, n->GetUnaryNode());
-		case uoMinus: return negative(evaluate(m, n->GetUnaryNode()));
-		case uoNot: return negateCmp(evaluate(m, n->GetUnaryNode()));
+		case uoPlus: return evaluate(m, maps, n->GetUnaryNode());
+		case uoMinus: return negative(evaluate(m, maps, n->GetUnaryNode()));
+		case uoNot: return negateCmp(evaluate(m, maps, n->GetUnaryNode()));
 	    }
 	case nkIdent:
 	    // return value stored for ident

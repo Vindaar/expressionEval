@@ -5,15 +5,18 @@ using namespace std;
 
 std::map<std::string, float> m = { {"hitsAna_energy", 6000}, {"hitsAna_xy2Sigma", 0.2} };
 
+map<string, map<int, float>> maps = { {"peakTimes", { {0, 1.5}, {1, 2.5}, {2, 3.5} } } };
+
 Either<double, bool> runIt(string s){
     auto expr = parseExpression(s);
     cout << "Is " << astToStr(expr) << endl;
-    return evaluate(m, expr);
+    return evaluate(m, maps, expr);
 }
 
 void testIt(string s, double exp){
     auto res = runIt(s);
     assert((res.isLeft()));
+    cout << "result " << res.unsafeGetLeft() << endl;
     assert((res.unsafeGetLeft() == exp));
 }
 
@@ -112,6 +115,20 @@ void boolEnglish(){
     testIt("2.1 < 2.2 and 1000 == 1000 and 6.4 >= 1.1 and 1234 != 2345 or 2 < 5", true);
     testIt("2.1 < 2.2 and 1000 == 1000 and 6.4 >= 1.1 and 1234 == 2345 or 2 < 5", true);
     testIt("2.1 < 2.2 and 1000 == 1000 and 6.4 >= 1.1 and 1234 == 2345 or 5 < 2", false);
+    //testIt("not 5 < 2", true);
+}
+
+void mapsTest(){
+    testIt("peakTimes[0]", 1.5);
+    testIt("peakTimes[0] == 1.5", true);
+    testIt("peakTimes[1]", 2.5);
+    testIt("peakTimes[1] == 2.5", true);
+    testIt("peakTimes[2]", 3.5);
+    testIt("peakTimes[2] == 3.5", true);
+
+    testIt("hitsAna_energy == 6000 and peakTimes[0] == 1.5", true);
+    testIt("hitsAna_energy == 6000 and peakTimes[1] == 2.5", true);
+    testIt("hitsAna_energy == 6000 and peakTimes[2] == 3.5", true);
 }
 
 void invalid(){
@@ -132,4 +149,5 @@ int main() {
     boolAndLogical();
     boolEnglish();
     invalid();
+    mapsTest();
 }
